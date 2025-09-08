@@ -2,9 +2,7 @@ package carsxe
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -56,10 +54,10 @@ func New(apiKey string, opts ...Option) *Client {
 }
 
 // buildURL builds a full URL with provided raw map params (no reflection).
-func (c *Client) buildURL(endpoint string, params map[string]string) (string, error) {
+func (c *Client) buildURL(endpoint string, params map[string]string) string {
 	u, err := url.Parse(c.baseURL + "/" + strings.TrimLeft(endpoint, "/"))
 	if err != nil {
-		return "", err
+		panic(fmt.Sprintf("Failed to parse URL: %v", err))
 	}
 	q := u.Query()
 	q.Set("key", c.apiKey)
@@ -70,68 +68,58 @@ func (c *Client) buildURL(endpoint string, params map[string]string) (string, er
 		}
 	}
 	u.RawQuery = q.Encode()
-	return u.String(), nil
+	return u.String()
 }
 
 // doRequest executes the HTTP request and decodes JSON into a generic map.
-func (c *Client) doRequest(req *http.Request) (map[string]any, error) {
+func (c *Client) doRequest(req *http.Request) map[string]any {
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, err
+		panic(fmt.Sprintf("HTTP request failed: %v", err))
 	}
 	defer resp.Body.Close()
 
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
-	}
-
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return nil, fmt.Errorf("carsxe: non-2xx response (%d): %s", resp.StatusCode, string(bodyBytes))
+		panic(fmt.Sprintf("Failed to read response body: %v", err))
 	}
 
 	if len(bodyBytes) == 0 {
-		return map[string]any{}, nil
+		return map[string]any{}
 	}
 
 	var out map[string]any
 	if err := json.Unmarshal(bodyBytes, &out); err != nil {
-		return nil, fmt.Errorf("carsxe: decode error: %w (body=%s)", err, string(bodyBytes))
+		panic(fmt.Sprintf("Failed to decode JSON: %v (body=%s)", err, string(bodyBytes)))
 	}
-	return out, nil
+	return out
 }
 
 // Get performs a generic GET request to any endpoint with query params.
-func (c *Client) Get(ctx context.Context, endpoint string, params map[string]string) (map[string]any, error) {
+func (c *Client) Get(endpoint string, params map[string]string) map[string]any {
 	if params == nil {
 		params = map[string]string{}
 	}
-	urlStr, err := c.buildURL(endpoint, params)
+	urlStr := c.buildURL(endpoint, params)
+	req, err := http.NewRequest(http.MethodGet, urlStr, nil)
 	if err != nil {
-		return nil, err
-	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, urlStr, nil)
-	if err != nil {
-		return nil, err
+		panic(fmt.Sprintf("Failed to create request: %v", err))
 	}
 	return c.doRequest(req)
 }
 
 // postJSON performs a POST with a JSON body (used for image-based endpoints).
-func (c *Client) postJSON(ctx context.Context, endpoint string, body any) (map[string]any, error) {
-	urlStr, err := c.buildURL(endpoint, nil)
-	if err != nil {
-		return nil, err
-	}
+func (c *Client) postJSON(endpoint string, body any) map[string]any {
+	urlStr := c.buildURL(endpoint, nil)
 	var buf bytes.Buffer
 	if body != nil {
 		if err := json.NewEncoder(&buf).Encode(body); err != nil {
-			return nil, err
+			panic(fmt.Sprintf("Failed to encode JSON body: %v", err))
 		}
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, urlStr, &buf)
+	req, err := http.NewRequest(http.MethodPost, urlStr, &buf)
 	if err != nil {
-		return nil, err
+		panic(fmt.Sprintf("Failed to create request: %v", err))
 	}
 	req.Header.Set("Content-Type", "application/json")
 	return c.doRequest(req)
@@ -144,62 +132,62 @@ You can remove these if you prefer only the generic Get().
 */
 
 // Specs => GET /specs (vin required; deepdata, disableIntVINDecoding optional)
-func (c *Client) Specs(ctx context.Context, params map[string]string) (map[string]any, error) {
-	return c.Get(ctx, "specs", params)
+func (c *Client) Specs(params map[string]string) map[string]any {
+	return c.Get("specs", params)
 }
 
 // MarketValue => GET /v2/marketvalue (vin)
-func (c *Client) MarketValue(ctx context.Context, params map[string]string) (map[string]any, error) {
-	return c.Get(ctx, "v2/marketvalue", params)
+func (c *Client) MarketValue(params map[string]string) map[string]any {
+	return c.Get("v2/marketvalue", params)
 }
 
 // History => GET /history (vin)
-func (c *Client) History(ctx context.Context, params map[string]string) (map[string]any, error) {
-	return c.Get(ctx, "history", params)
+func (c *Client) History(params map[string]string) map[string]any {
+	return c.Get("history", params)
 }
 
 // Recalls => GET /v1/recalls (vin)
-func (c *Client) Recalls(ctx context.Context, params map[string]string) (map[string]any, error) {
-	return c.Get(ctx, "v1/recalls", params)
+func (c *Client) Recalls(params map[string]string) map[string]any {
+	return c.Get("v1/recalls", params)
 }
 
 // InternationalVINDecoder => GET /v1/international-vin-decoder (vin)
-func (c *Client) InternationalVINDecoder(ctx context.Context, params map[string]string) (map[string]any, error) {
-	return c.Get(ctx, "v1/international-vin-decoder", params)
+func (c *Client) InternationalVINDecoder(params map[string]string) map[string]any {
+	return c.Get("v1/international-vin-decoder", params)
 }
 
 // PlateDecoder => GET /v2/platedecoder (plate, country, state?, district?)
-func (c *Client) PlateDecoder(ctx context.Context, params map[string]string) (map[string]any, error) {
-	return c.Get(ctx, "v2/platedecoder", params)
+func (c *Client) PlateDecoder(params map[string]string) map[string]any {
+	return c.Get("v2/platedecoder", params)
 }
 
 // PlateImageRecognition => POST /platerecognition with JSON {"image": "<url>"}
-func (c *Client) PlateImageRecognition(ctx context.Context, imageURL string) (map[string]any, error) {
+func (c *Client) PlateImageRecognition(imageURL string) map[string]any {
 	if strings.TrimSpace(imageURL) == "" {
-		return nil, errors.New("image URL required")
+		panic("image URL required")
 	}
-	return c.postJSON(ctx, "platerecognition", map[string]string{"image": imageURL})
+	return c.postJSON("platerecognition", map[string]string{"image": imageURL})
 }
 
 // VinOCR => POST /v1/vinocr with JSON {"image": "<url>"}
-func (c *Client) VinOCR(ctx context.Context, imageURL string) (map[string]any, error) {
+func (c *Client) VinOCR(imageURL string) map[string]any {
 	if strings.TrimSpace(imageURL) == "" {
-		return nil, errors.New("image URL required")
+		panic("image URL required")
 	}
-	return c.postJSON(ctx, "v1/vinocr", map[string]string{"image": imageURL})
+	return c.postJSON("v1/vinocr", map[string]string{"image": imageURL})
 }
 
 // YearMakeModel => GET /v1/ymm (year, make, model, trim?)
-func (c *Client) YearMakeModel(ctx context.Context, params map[string]string) (map[string]any, error) {
-	return c.Get(ctx, "v1/ymm", params)
+func (c *Client) YearMakeModel(params map[string]string) map[string]any {
+	return c.Get("v1/ymm", params)
 }
 
 // Images => GET /images (make, model, optional year, trim, color, etc.)
-func (c *Client) Images(ctx context.Context, params map[string]string) (map[string]any, error) {
-	return c.Get(ctx, "images", params)
+func (c *Client) Images(params map[string]string) map[string]any {
+	return c.Get("images", params)
 }
 
 // ObdCodesDecoder => GET /obdcodesdecoder (code)
-func (c *Client) ObdCodesDecoder(ctx context.Context, params map[string]string) (map[string]any, error) {
-	return c.Get(ctx, "obdcodesdecoder", params)
+func (c *Client) ObdCodesDecoder(params map[string]string) map[string]any {
+	return c.Get("obdcodesdecoder", params)
 }
