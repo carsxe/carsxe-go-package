@@ -191,3 +191,7 @@ func (c *Client) Images(params map[string]string) map[string]any {
 func (c *Client) ObdCodesDecoder(params map[string]string) map[string]any {
 	return c.Get("obdcodesdecoder", params)
 }
+
+func(c *Client) LienAndTheft(params map[string]string) map[string]any {
+	return c.Get("/v1/lien-theft", params)
+}

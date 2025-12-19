@@ -11,7 +11,6 @@
 To get started with the CarsXE API, follow these steps:
 
 1. **Sign up for a CarsXE account:**
-
    - [Register here](https://api.carsxe.com/register)
    - Add a [payment method](https://api.carsxe.com/dashboard/billing#payment-methods) to activate your subscription and get your API key.
 
@@ -280,6 +279,22 @@ obdcode := client.ObdCodesDecoder(map[string]string{"code": "P0115"})
 ```
 
 ---
+
+### `LienAndTheft` – Check lien and theft records by VIN
+
+**Required:**
+
+- `vin`
+
+**Optional:**
+
+- None
+
+**Example:**
+
+```go
+lienTheft := client.LienAndTheft(map[string]string{"vin": "2C3CDXFG1FH762860"})
+```
 
 ## Notes & Best Practices
 
