@@ -136,7 +136,9 @@ func (c *Client) Specs(params map[string]string) map[string]any {
 	return c.Get("specs", params)
 }
 
-// MarketValue => GET /v2/marketvalue (vin)
+// MarketValue => GET /v2/marketvalue
+// Required: vin
+// Optional: state (US state code), mileage (numeric string), condition (excellent|clean|average|rough)
 func (c *Client) MarketValue(params map[string]string) map[string]any {
 	return c.Get("v2/marketvalue", params)
 }

@@ -134,12 +134,14 @@ decodedPlate := client.PlateDecoder(map[string]string{"plate": "7XER187", "state
 
 **Optional:**
 
-- `state`
+- `state` — US state code for regional pricing (e.g. `CA`, `TX`)
+- `mileage` — current mileage to adjust the value
+- `condition` — vehicle condition: `excellent` | `clean` | `average` | `rough`
 
 **Example:**
 
 ```go
-marketvalue := client.MarketValue(map[string]string{"vin": "WBAFR7C57CC811956"})
+marketvalueDetailed := client.MarketValue(map[string]string{"vin": "WBAFR7C57CC811956", "state": "CA", "mileage": "45000", "condition": "clean"})
 ```
 
 ---
