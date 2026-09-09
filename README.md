@@ -298,6 +298,247 @@ obdcode := client.ObdCodesDecoder(map[string]string{"code": "P0115"})
 lienTheft := client.LienAndTheft(map[string]string{"vin": "2C3CDXFG1FH762860"})
 ```
 
+---
+
+### `RecallsYmm` – Get safety recall data by year, make, and model
+
+**Required:**
+
+- `year`
+- `make`
+- `model`
+
+**Optional:**
+
+- None
+
+**Example:**
+
+```go
+recallsYmm := client.RecallsYmm(map[string]string{"year": "2026", "make": "toyota", "model": "corolla"})
+```
+
+---
+
+### `SubmitRecallsBatch` – Submit VINs for async bulk recall checking
+
+POST JSON to `/v1/recalls-batch/submit`. Provide at least one of `vins`, `csv`, or `csvUrl` (they can be combined). Max 10,000 unique VINs.
+
+**Required (at least one):**
+
+- `vins` — array of 17-character VIN strings
+- `csv` — inline CSV text
+- `csvUrl` — HTTPS URL to a CSV file
+
+**Optional:**
+
+- `webhookUrl` — HTTPS URL notified when the batch finishes
+
+**Example:**
+
+```go
+batch := client.SubmitRecallsBatch(map[string]any{
+	"vins": []string{"1HGBH41JXMN109186", "5YJSA1E26HF000001", "1C4JJXR64PW696340"},
+})
+```
+
+---
+
+### `RecallsBatchStatus` – Poll a recall batch job
+
+**Required:**
+
+- `batchId`
+
+**Optional:**
+
+- None
+
+**Example:**
+
+```go
+status := client.RecallsBatchStatus(map[string]string{"batchId": "brb_mnablbn7_wvbaqv"})
+```
+
+---
+
+### `RecallsBatchResults` – Fetch completed recall batch results as JSON
+
+**Required:**
+
+- `batchId`
+
+**Optional:**
+
+- None
+
+**Example:**
+
+```go
+results := client.RecallsBatchResults(map[string]string{"batchId": "brb_mnablbn7_wvbaqv"})
+```
+
+---
+
+### `RecallsBatchDownload` – Download completed recall batch results as CSV
+
+**Required:**
+
+- `batchId`
+
+**Optional:**
+
+- None
+
+CSV responses are returned as `map[string]any{"csv": "<csv text>"}`. JSON error bodies are decoded as usual.
+
+**Example:**
+
+```go
+download := client.RecallsBatchDownload(map[string]string{"batchId": "brb_mnablbn7_wvbaqv"})
+```
+
+---
+
+### `YmmOptions` – List years, makes, models, variants, or trims for dropdowns
+
+**Required:**
+
+- None (no filters lists years)
+
+**Optional:**
+
+- `dimension` — `years` | `makes` | `models` | `trims` | `variants`
+- `year`
+- `make` (required for `dimension=models`)
+- `model` (required for `dimension=trims`, and for `dimension=variants` unless both `year` and `make` are set)
+- `trim` — substring filter on trim/variant names
+
+**Example:**
+
+```go
+years := client.YmmOptions(map[string]string{})
+makes := client.YmmOptions(map[string]string{"year": "2026"})
+models := client.YmmOptions(map[string]string{"make": "Toyota"})
+variants := client.YmmOptions(map[string]string{"year": "2026", "make": "Toyota", "model": "Tacoma"})
+```
+
+---
+
+### `OwnershipVin` – Look up registered owner(s) by VIN
+
+Enterprise only. Billed per owner returned; a `404` with `error: "no_data"` is not billed.
+
+**Required:**
+
+- `vin`
+
+**Optional:**
+
+- `include` — comma-separated subset of `demographics,emails,phones,vehicle_history`
+
+**Example:**
+
+```go
+owners := client.OwnershipVin(map[string]string{"vin": "1FT8X3BT0BEA61538"})
+```
+
+---
+
+### `OwnershipPerson` – Resolve contact details by name and address
+
+Enterprise only.
+
+**Required:**
+
+- `first_name`
+- `last_name`
+- `address` — street address only
+- `zip` — 5-digit US ZIP, optionally ZIP+4
+
+**Optional:**
+
+- `include` — comma-separated subset of `demographics,emails,phones,vehicle_history`
+
+**Example:**
+
+```go
+person := client.OwnershipPerson(map[string]string{
+	"first_name": "John",
+	"last_name":  "Sample",
+	"address":    "123 Example St",
+	"zip":        "90210",
+})
+```
+
+---
+
+### `OwnershipAddress` – Find residents at a street address
+
+Enterprise only.
+
+**Required:**
+
+- `address` — street address only
+- `zip` — 5-digit US ZIP, optionally ZIP+4
+
+**Optional:**
+
+- `include` — comma-separated subset of `demographics,emails,phones,vehicle_history`
+- `variant` — legacy alias; prefer `include`
+
+**Example:**
+
+```go
+residents := client.OwnershipAddress(map[string]string{"address": "123 Example St", "zip": "90210"})
+```
+
+---
+
+### `OwnershipZip` – Search people in a ZIP code with optional filters
+
+Enterprise only. Paginated; each returned record is billed.
+
+**Required:**
+
+- `zip` — exactly 5 digits
+
+**Optional:**
+
+- `gender` — `M` or `F`
+- `min_age`
+- `max_age`
+- `income` — letter code or full label (e.g. `F` or `$50,000-$59,999`)
+- `page` — default `1`
+- `limit` — default `15`, max `100`
+- `include` — comma-separated subset of `demographics,emails,phones,vehicle_history`
+- `variant` — legacy alias; prefer `include`
+
+**Example:**
+
+```go
+area := client.OwnershipZip(map[string]string{"zip": "90210", "gender": "f", "min_age": "45"})
+```
+
+---
+
+### `USPlateDecoder` – Decode a US license plate (plate, state)
+
+**Required:**
+
+- `plate`
+- `state` — two-letter US state, `DC`, or `PR`
+
+**Optional:**
+
+- `decodeVIN` — `true` to also decode the VIN
+
+**Example:**
+
+```go
+usPlate := client.USPlateDecoder(map[string]string{"plate": "H37SFS", "state": "NJ", "decodeVIN": "true"})
+```
+
 ## Notes & Best Practices
 
 - **Parameter requirements:** Each endpoint requires specific parameters—see the Required/Optional fields above.
