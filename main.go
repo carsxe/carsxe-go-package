@@ -194,6 +194,89 @@ func (c *Client) ObdCodesDecoder(params map[string]string) map[string]any {
 	return c.Get("obdcodesdecoder", params)
 }
 
-func(c *Client) LienAndTheft(params map[string]string) map[string]any {
+func (c *Client) LienAndTheft(params map[string]string) map[string]any {
 	return c.Get("/v1/lien-theft", params)
+}
+
+// RecallsYmm => GET /v1/recalls-ymm (year, make, model)
+func (c *Client) RecallsYmm(params map[string]string) map[string]any {
+	return c.Get("v1/recalls-ymm", params)
+}
+
+// SubmitRecallsBatch => POST /v1/recalls-batch/submit
+// JSON body: vins ([]string) and/or csv and/or csvUrl; webhookUrl optional
+func (c *Client) SubmitRecallsBatch(body any) map[string]any {
+	return c.postJSON("v1/recalls-batch/submit", body)
+}
+
+// RecallsBatchStatus => GET /v1/recalls-batch/status (batchId)
+func (c *Client) RecallsBatchStatus(params map[string]string) map[string]any {
+	return c.Get("v1/recalls-batch/status", params)
+}
+
+// RecallsBatchResults => GET /v1/recalls-batch/results (batchId)
+func (c *Client) RecallsBatchResults(params map[string]string) map[string]any {
+	return c.Get("v1/recalls-batch/results", params)
+}
+
+// RecallsBatchDownload => GET /v1/recalls-batch/download (batchId)
+// Returns decoded JSON on error/JSON responses, or {"csv": "<text>"} for CSV.
+func (c *Client) RecallsBatchDownload(params map[string]string) map[string]any {
+	if params == nil {
+		params = map[string]string{}
+	}
+	urlStr := c.buildURL("v1/recalls-batch/download", params)
+	req, err := http.NewRequest(http.MethodGet, urlStr, nil)
+	if err != nil {
+		panic(fmt.Sprintf("Failed to create request: %v", err))
+	}
+	return c.doRequestCSV(req)
+}
+
+// YmmOptions => GET /v1/ymm-options (dimension?, year?, make?, model?, trim?)
+func (c *Client) YmmOptions(params map[string]string) map[string]any {
+	return c.Get("v1/ymm-options", params)
+}
+
+// OwnershipVin => GET /v1/ownership/vin (vin; include?)
+func (c *Client) OwnershipVin(params map[string]string) map[string]any {
+	return c.Get("v1/ownership/vin", params)
+}
+
+// OwnershipPerson => GET /v1/ownership/person (first_name, last_name, address, zip; include?)
+func (c *Client) OwnershipPerson(params map[string]string) map[string]any {
+	return c.Get("v1/ownership/person", params)
+}
+
+// OwnershipAddress => GET /v1/ownership/address (address, zip; include?, variant?)
+func (c *Client) OwnershipAddress(params map[string]string) map[string]any {
+	return c.Get("v1/ownership/address", params)
+}
+
+// OwnershipZip => GET /v1/ownership/zip (zip; gender?, min_age?, max_age?, income?, page?, limit?, include?, variant?)
+func (c *Client) OwnershipZip(params map[string]string) map[string]any {
+	return c.Get("v1/ownership/zip", params)
+}
+
+// doRequestCSV is like doRequest but keeps non-JSON bodies as {"csv": "..."}.
+func (c *Client) doRequestCSV(req *http.Request) map[string]any {
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		panic(fmt.Sprintf("HTTP request failed: %v", err))
+	}
+	defer resp.Body.Close()
+
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		panic(fmt.Sprintf("Failed to read response body: %v", err))
+	}
+	if len(bodyBytes) == 0 {
+		return map[string]any{}
+	}
+
+	var out map[string]any
+	if err := json.Unmarshal(bodyBytes, &out); err == nil {
+		return out
+	}
+	return map[string]any{"csv": string(bodyBytes)}
 }
