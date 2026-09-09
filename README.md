@@ -520,25 +520,6 @@ Enterprise only. Paginated; each returned record is billed.
 area := client.OwnershipZip(map[string]string{"zip": "90210", "gender": "f", "min_age": "45"})
 ```
 
----
-
-### `USPlateDecoder` – Decode a US license plate (plate, state)
-
-**Required:**
-
-- `plate`
-- `state` — two-letter US state, `DC`, or `PR`
-
-**Optional:**
-
-- `decodeVIN` — `true` to also decode the VIN
-
-**Example:**
-
-```go
-usPlate := client.USPlateDecoder(map[string]string{"plate": "H37SFS", "state": "NJ", "decodeVIN": "true"})
-```
-
 ## Notes & Best Practices
 
 - **Parameter requirements:** Each endpoint requires specific parameters—see the Required/Optional fields above.

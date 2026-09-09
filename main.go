@@ -258,11 +258,6 @@ func (c *Client) OwnershipZip(params map[string]string) map[string]any {
 	return c.Get("v1/ownership/zip", params)
 }
 
-// USPlateDecoder => GET /v1/us-platedecoder (plate, state; decodeVIN?)
-func (c *Client) USPlateDecoder(params map[string]string) map[string]any {
-	return c.Get("v1/us-platedecoder", params)
-}
-
 // doRequestCSV is like doRequest but keeps non-JSON bodies as {"csv": "..."}.
 func (c *Client) doRequestCSV(req *http.Request) map[string]any {
 	resp, err := c.httpClient.Do(req)

@@ -97,7 +97,7 @@ func TestRecallsBatchDownloadCSV(t *testing.T) {
 	}
 }
 
-func TestYmmOptionsOwnershipUSPlate(t *testing.T) {
+func TestYmmOptionsAndOwnership(t *testing.T) {
 	c := testClient(t, func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]any{"path": r.URL.Path, "q": r.URL.RawQuery})
 	})
@@ -110,7 +110,6 @@ func TestYmmOptionsOwnershipUSPlate(t *testing.T) {
 		{c.OwnershipPerson(map[string]string{"first_name": "John", "last_name": "Sample", "address": "123 Example St", "zip": "90210"}), "/v1/ownership/person"},
 		{c.OwnershipAddress(map[string]string{"address": "123 Example St", "zip": "90210"}), "/v1/ownership/address"},
 		{c.OwnershipZip(map[string]string{"zip": "90210"}), "/v1/ownership/zip"},
-		{c.USPlateDecoder(map[string]string{"plate": "H37SFS", "state": "NJ"}), "/v1/us-platedecoder"},
 	}
 	for _, tc := range cases {
 		if tc.got["path"] != tc.want {
