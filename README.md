@@ -2,17 +2,19 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/carsxe/carsxe-go-package.svg)](https://pkg.go.dev/github.com/carsxe/carsxe-go-package)
 
-**CarsXE** is a powerful and developer-friendly API that gives you instant access to a wide range of vehicle data. From VIN decoding and market value estimation to vehicle history, images, OBD code explanations, and plate recognition, CarsXE provides everything you need to build automotive applications at scale.
+**[CarsXE](https://carsxe.com)** is a powerful and developer-friendly API that gives you instant access to a wide range of vehicle data. From [VIN decoding](https://carsxe.com/vehicle-specifications) and [market value](https://carsxe.com/vehicle-market-value) estimation to [vehicle history](https://carsxe.com/vehicle-history), [images](https://carsxe.com/vehicle-images), OBD code explanations, and [plate recognition](https://carsxe.com/vehicle-plate-decoder), CarsXE provides everything you need to build automotive applications at scale.
 
-🌐 **Website:** [https://api.carsxe.com](https://api.carsxe.com)  
-📄 **Docs:** [https://api.carsxe.com/docs](https://api.carsxe.com/docs)  
-📦 **All Products:** [https://api.carsxe.com/all-products](https://api.carsxe.com/all-products)
+🌐 **Website:** [https://carsxe.com](https://carsxe.com)  
+📄 **Docs:** [https://carsxe.com/docs](https://carsxe.com/docs)  
+📦 **All Products:** [https://carsxe.com/all-products](https://carsxe.com/all-products)
+
+**Product pages:** [Vehicle History](https://carsxe.com/vehicle-history) · [Plate Decoder](https://carsxe.com/vehicle-plate-decoder) · [Vehicle Specifications](https://carsxe.com/vehicle-specifications) · [International VIN Decoder](https://carsxe.com/international-vin-decoder) · [Vehicle Images](https://carsxe.com/vehicle-images) · [Vehicle Recalls](https://carsxe.com/vehicle-recalls) · [Market Value](https://carsxe.com/vehicle-market-value)
 
 To get started with the CarsXE API, follow these steps:
 
 1. **Sign up for a CarsXE account:**
-   - [Register here](https://api.carsxe.com/register)
-   - Add a [payment method](https://api.carsxe.com/dashboard/billing#payment-methods) to activate your subscription and get your API key.
+   - [Register here](https://carsxe.com/register)
+   - Add a [payment method](https://carsxe.com/dashboard/billing#payment-methods) to activate your subscription and get your API key.
 
 2. **Install the CarsXE Go package:**
 
@@ -62,7 +64,7 @@ func main() {
 
 The CarsXE API provides the following endpoint methods:
 
-### `Specs` – Decode VIN & get full vehicle specifications
+### `Specs` – Decode VIN & get full [vehicle specifications](https://carsxe.com/vehicle-specifications)
 
 **Required:**
 
@@ -81,7 +83,7 @@ vehicle := client.Specs(map[string]string{"vin": "WBAFR7C57CC811956"})
 
 ---
 
-### `InternationalVINDecoder` – Decode VIN with worldwide support
+### `InternationalVINDecoder` – Decode VIN with [worldwide support](https://carsxe.com/international-vin-decoder)
 
 **Required:**
 
@@ -99,7 +101,7 @@ intvin := client.InternationalVINDecoder(map[string]string{"vin": "WF0MXXGBWM8R4
 
 ---
 
-### `PlateDecoder` – Decode license plate info (plate, country)
+### `PlateDecoder` – Decode [license plate](https://carsxe.com/vehicle-plate-decoder) info (plate, country)
 
 **Required:**
 
@@ -126,7 +128,7 @@ decodedPlate := client.PlateDecoder(map[string]string{"plate": "7XER187", "state
 
 ---
 
-### `MarketValue` – Estimate vehicle market value based on VIN
+### `MarketValue` – Estimate vehicle [market value](https://carsxe.com/vehicle-market-value) based on VIN
 
 **Required:**
 
@@ -146,7 +148,7 @@ marketvalueDetailed := client.MarketValue(map[string]string{"vin": "WBAFR7C57CC8
 
 ---
 
-### `History` – Retrieve vehicle history
+### `History` – Retrieve [vehicle history](https://carsxe.com/vehicle-history)
 
 **Required:**
 
@@ -164,7 +166,7 @@ history := client.History(map[string]string{"vin": "WBAFR7C57CC811956"})
 
 ---
 
-### `Images` – Fetch images by make, model, year, trim
+### `Images` – Fetch [images](https://carsxe.com/vehicle-images) by make, model, year, trim
 
 **Required:**
 
@@ -190,7 +192,7 @@ images := client.Images(map[string]string{"make": "BMW", "model": "X5", "year": 
 
 ---
 
-### `Recalls` – Get safety recall data for a VIN
+### `Recalls` – Get safety [recall](https://carsxe.com/vehicle-recalls) data for a VIN
 
 **Required:**
 
@@ -208,7 +210,7 @@ recalls := client.Recalls(map[string]string{"vin": "1C4JJXR64PW696340"})
 
 ---
 
-### `PlateImageRecognition` – Read & decode plates from images
+### `PlateImageRecognition` – Read & decode [plates](https://carsxe.com/vehicle-plate-decoder) from images
 
 **Required:**
 
@@ -221,8 +223,10 @@ recalls := client.Recalls(map[string]string{"vin": "1C4JJXR64PW696340"})
 **Example:**
 
 ```go
-plateimg := client.PlateImageRecognition("https://api.carsxe.com/img/apis/plate_recognition.JPG")
+plateimg := client.PlateImageRecognition("https://imagedelivery.net/moyiiSImjJPI_EZVxNMBBw/f49aed53-d736-4370-f3f4-97418841c800/public")
 ```
+
+![Plate recognition sample](https://imagedelivery.net/moyiiSImjJPI_EZVxNMBBw/f49aed53-d736-4370-f3f4-97418841c800/public)
 
 ---
 
@@ -239,7 +243,7 @@ plateimg := client.PlateImageRecognition("https://api.carsxe.com/img/apis/plate_
 **Example:**
 
 ```go
-vinocr := client.VinOCR("https://api.carsxe.com/img/apis/plate_recognition.JPG")
+vinocr := client.VinOCR("https://imagedelivery.net/moyiiSImjJPI_EZVxNMBBw/f49aed53-d736-4370-f3f4-97418841c800/public")
 ```
 
 ---
@@ -300,7 +304,7 @@ lienTheft := client.LienAndTheft(map[string]string{"vin": "2C3CDXFG1FH762860"})
 
 ---
 
-### `RecallsYmm` – Get safety recall data by year, make, and model
+### `RecallsYmm` – Get safety [recall](https://carsxe.com/vehicle-recalls) data by year, make, and model
 
 **Required:**
 
@@ -320,7 +324,7 @@ recallsYmm := client.RecallsYmm(map[string]string{"year": "2026", "make": "toyot
 
 ---
 
-### `SubmitRecallsBatch` – Submit VINs for async bulk recall checking
+### `SubmitRecallsBatch` – Submit VINs for async bulk [recall](https://carsxe.com/vehicle-recalls) checking
 
 POST JSON to `/v1/recalls-batch/submit`. Provide at least one of `vins`, `csv`, or `csvUrl` (they can be combined). Max 10,000 unique VINs.
 
@@ -344,7 +348,7 @@ batch := client.SubmitRecallsBatch(map[string]any{
 
 ---
 
-### `RecallsBatchStatus` – Poll a recall batch job
+### `RecallsBatchStatus` – Poll a [recall](https://carsxe.com/vehicle-recalls) batch job
 
 **Required:**
 
@@ -362,7 +366,7 @@ status := client.RecallsBatchStatus(map[string]string{"batchId": "brb_mnablbn7_w
 
 ---
 
-### `RecallsBatchResults` – Fetch completed recall batch results as JSON
+### `RecallsBatchResults` – Fetch completed [recall](https://carsxe.com/vehicle-recalls) batch results as JSON
 
 **Required:**
 
@@ -380,7 +384,7 @@ results := client.RecallsBatchResults(map[string]string{"batchId": "brb_mnablbn7
 
 ---
 
-### `RecallsBatchDownload` – Download completed recall batch results as CSV
+### `RecallsBatchDownload` – Download completed [recall](https://carsxe.com/vehicle-recalls) batch results as CSV
 
 **Required:**
 
@@ -525,7 +529,7 @@ area := client.OwnershipZip(map[string]string{"zip": "90210", "gender": "f", "mi
 - **Parameter requirements:** Each endpoint requires specific parameters—see the Required/Optional fields above.
 - **Return values:** All responses are Go maps (`map[string]any`) for easy access and manipulation.
 - **Error handling:** The client currently panics on network or JSON decode errors. Consider wrapping calls with `recover` or modifying the client to return errors for production use.
-- **More info:** For advanced usage and full details, visit the [official API documentation](https://api.carsxe.com/docs).
+- **More info:** For advanced usage and full details, visit the [official API documentation](https://carsxe.com/docs).
 
 ---
 
