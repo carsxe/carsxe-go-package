@@ -223,8 +223,10 @@ recalls := client.Recalls(map[string]string{"vin": "1C4JJXR64PW696340"})
 **Example:**
 
 ```go
-plateimg := client.PlateImageRecognition("https://api.carsxe.com/img/apis/plate_recognition.JPG")
+plateimg := client.PlateImageRecognition("https://imagedelivery.net/moyiiSImjJPI_EZVxNMBBw/f49aed53-d736-4370-f3f4-97418841c800/public")
 ```
+
+![Plate recognition sample](https://imagedelivery.net/moyiiSImjJPI_EZVxNMBBw/f49aed53-d736-4370-f3f4-97418841c800/public)
 
 ---
 
@@ -241,7 +243,7 @@ plateimg := client.PlateImageRecognition("https://api.carsxe.com/img/apis/plate_
 **Example:**
 
 ```go
-vinocr := client.VinOCR("https://api.carsxe.com/img/apis/plate_recognition.JPG")
+vinocr := client.VinOCR("https://imagedelivery.net/moyiiSImjJPI_EZVxNMBBw/f49aed53-d736-4370-f3f4-97418841c800/public")
 ```
 
 ---
